@@ -71,7 +71,7 @@ export function ProductionAnimation({ isActive, totalParts, onComplete }: Props)
     mixerRef.current = mixer;
 
     // Teile generieren und fallen lassen
-    const parts = Math.min(totalParts, 100);
+    const parts = totalParts; // Entfernt die Begrenzung auf 100
     const delay = 2000 / parts; // 2 Sekunden für alle Teile
     const fallDuration = 800; // 0.8 Sekunden Fallzeit pro Teil
 
