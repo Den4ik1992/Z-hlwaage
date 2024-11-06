@@ -57,7 +57,6 @@ export default function App() {
     const sample = takeSample(parts, referenceParts);
     const calibrationResult = calibrate(sample, referenceParts);
     
-    setCalibration(calibrationResult);
     setResult(null);
     setIsWeighing(false);
     setShowCalibration(false);
@@ -142,7 +141,7 @@ export default function App() {
             {showAnimation ? (
               <ProductionAnimation
                 isActive={showAnimation}
-                totalParts={100}
+                totalParts={currentProductionConfig?.totalParts || 1000}
                 onComplete={handleAnimationComplete}
               />
             ) : showCalibration ? (
@@ -168,7 +167,6 @@ export default function App() {
 
         <footer className="text-center text-sm text-gray-500 mt-12">
           <p>Simulationsversion 2.0 - Entwickelt für Schulung und Prozessoptimierung</p>
-          <p>Simuliert nach Industriestandards | Ideal für Qualitätssicherung und Training</p>
         </footer>
       </div>
     </div>
