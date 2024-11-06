@@ -69,7 +69,7 @@ export default function App() {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     const sample = takeSample(parts, sampleSize);
-    const weighResult = weighSample(sample, calibration);
+    const weighResult =  weighSample(parts, calibration);
     
     setResult(weighResult);
     setIsWeighing(false);
