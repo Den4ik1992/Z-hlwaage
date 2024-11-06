@@ -18,17 +18,19 @@ export default function App() {
   const [showSpecs, setShowSpecs] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
   const [showCalibration, setShowCalibration] = useState(false);
+  const [totalParts, setTotalParts] = useState<number>(0);
 
   const handleProduction = useCallback(async (config: ProductionConfig) => {
     setIsProducing(true);
     setShowAnimation(true);
     setCalibration(null);
     setResult(null);
+    setTotalParts(config.totalParts);
   }, []);
 
   const handleAnimationComplete = useCallback(() => {
     const newParts = generateParts({
-      totalParts: 1000,
+      totalParts: totalParts,
       distribution: 'normal',
       manualGroups: [],
       normalMean: 2.2,
@@ -37,7 +39,7 @@ export default function App() {
     setParts(newParts);
     setShowAnimation(false);
     setIsProducing(false);
-  }, []);
+  }, [totalParts]);
 
   const handleCalibrate = useCallback(async (referenceParts: number) => {
     if (parts.length === 0) return;
