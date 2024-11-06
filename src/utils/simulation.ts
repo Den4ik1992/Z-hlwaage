@@ -72,35 +72,48 @@ export function calibrate(sample: Part[], referenceParts: number) {
 }
 
 export function weighSample(sample: Part[], calibration: { averageWeight: number }) {
-  const STEP_SIZE = 10;
+  const STEP_SIZE = Math.min(10, Math.ceil(sample.length / 100)); // Dynamische Schrittgröße
   const measurementPoints = [];
   let accumulatedWeight = 0;
   let accumulatedParts = 0;
   
   for (let i = 0; i < sample.length; i += STEP_SIZE) {
-    const stepSample = sample.slice(i, i + STEP_SIZE);
+    const stepSample = sample.slice(i, Math.min(i + STEP_SIZE, sample.length));
     const stepWeight = stepSample.reduce((sum, part) => sum + part.weight, 0);
     
     accumulatedWeight += stepWeight;
     accumulatedParts += stepSample.length;
     
-    const displayWeight = Math.round(accumulatedWeight * 10) / 10;
-    const estimatedParts = Math.round(displayWeight / calibration.averageWeight);
-    
+    // Nur jeden 100. Messpunkt speichern bei großen Mengen
+    if (sample.length <= 1000 || accumulatedParts % Math.ceil(sample.length / 100) === 0) {
+      const displayWeight = Math.round(accumulatedWeight * 10) / 10;
+      const estimatedParts = Math.round(displayWeight / calibration.averageWeight);
+      
+      measurementPoints.push({
+        parts: accumulatedParts,
+        estimatedParts: estimatedParts,
+        error: estimatedParts - accumulatedParts
+      });
+    }
+  }
+  
+  // Sicherstellen, dass der letzte Messpunkt immer enthalten ist
+  const finalWeight = Math.round(accumulatedWeight * 10) / 10;
+  const finalEstimatedParts = Math.round(finalWeight / calibration.averageWeight);
+  
+  if (measurementPoints[measurementPoints.length - 1]?.parts !== sample.length) {
     measurementPoints.push({
-      parts: accumulatedParts,
-      estimatedParts: estimatedParts,
-      error: estimatedParts - accumulatedParts
+      parts: sample.length,
+      estimatedParts: finalEstimatedParts,
+      error: finalEstimatedParts - sample.length
     });
   }
   
-  const finalMeasurement = measurementPoints[measurementPoints.length - 1];
-  
   return {
-    totalWeight: Math.round(accumulatedWeight * 10) / 10,
-    estimatedTotalParts: finalMeasurement.estimatedParts,
+    totalWeight: finalWeight,
+    estimatedTotalParts: finalEstimatedParts,
     actualTotalParts: sample.length,
-    error: finalMeasurement.error,
+    error: finalEstimatedParts - sample.length,
     measurementPoints
   };
 }
