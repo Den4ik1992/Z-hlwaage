@@ -72,7 +72,7 @@ export function calibrate(sample: Part[], referenceParts: number) {
 }
 
 export function weighSample(sample: Part[], calibration: { averageWeight: number }) {
-  const STEP_SIZE = Math.min(10, Math.ceil(sample.length / 100)); // Dynamische Schrittgröße
+  const STEP_SIZE = Math.min(10, Math.ceil(sample.length / 100));
   const measurementPoints = [];
   let accumulatedWeight = 0;
   let accumulatedParts = 0;
@@ -84,7 +84,6 @@ export function weighSample(sample: Part[], calibration: { averageWeight: number
     accumulatedWeight += stepWeight;
     accumulatedParts += stepSample.length;
     
-    // Nur jeden 100. Messpunkt speichern bei großen Mengen
     if (sample.length <= 1000 || accumulatedParts % Math.ceil(sample.length / 100) === 0) {
       const displayWeight = Math.round(accumulatedWeight * 10) / 10;
       const estimatedParts = Math.round(displayWeight / calibration.averageWeight);
@@ -97,17 +96,8 @@ export function weighSample(sample: Part[], calibration: { averageWeight: number
     }
   }
   
-  // Sicherstellen, dass der letzte Messpunkt immer enthalten ist
   const finalWeight = Math.round(accumulatedWeight * 10) / 10;
   const finalEstimatedParts = Math.round(finalWeight / calibration.averageWeight);
-  
-  if (measurementPoints[measurementPoints.length - 1]?.parts !== sample.length) {
-    measurementPoints.push({
-      parts: sample.length,
-      estimatedParts: finalEstimatedParts,
-      error: finalEstimatedParts - sample.length
-    });
-  }
   
   return {
     totalWeight: finalWeight,
